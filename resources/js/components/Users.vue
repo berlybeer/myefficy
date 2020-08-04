@@ -129,13 +129,14 @@
           }
         },
         methods: {
-          loadUsers(){
-           
+          loadUsers(){         
             axios.get("api/user").then (({ data }) => (this.users = data.data));
           },
+
           createUser(){
             this.$Progress.start();
             this.form.post('api/user');
+            Fire.$emit('AfterCreate');
             $('#addNew').modal('hide')
             Toast.fire({
               icon: 'success',
@@ -147,7 +148,10 @@
         },
         created() {
             this.loadUsers();
-            setInterval(() => this.loadUsers(), 3000);
+            Fire.$on('AfterCreate', () => {
+              this.loadUsers();
+            });
+            // setInterval(() => this.loadUsers(), 3000);
         }
     }
 </script>
