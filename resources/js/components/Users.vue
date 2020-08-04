@@ -53,9 +53,38 @@
                           <span aria-hidden="true">&times;</span>
                         </button>
                       </div>
+
                       <div class="modal-body">
-                        ...
+                          
+                         <div class="form-group">
+                            <input v-model="form.name" type="text" name="name" placeholder="Name"
+                              class="form-control" :class="{ 'is-invalid': form.errors.has('name') }">
+                            <has-error :form="form" field="name"></has-error>
+                          </div>
+
+                          <div class="form-group">
+                            <input v-model="form.email" type="text" name="email" placeholder="admin@me.com"
+                              class="form-control" :class="{ 'is-invalid': form.errors.has('email') }">
+                            <has-error :form="form" field="email"></has-error>
+                          </div>
+                      
+                          <div class="form-group">
+                            <input v-model="form.bio" type="text" name="bio" placeholder="Short bio for user (Optional)"
+                              class="form-control" :class="{ 'is-invalid': form.errors.has('bio') }">
+                            <has-error :form="form" field="bio"></has-error>
+                          </div>
+
+                          <div class="form-group">
+                            <select name="type" v-model="form.type" id="type" class="form-control" :class="{'is-invalid': form.errors.has('type')}">
+                              <option value="">Select User Role</option>
+                              <option value="admin">Admin</option>
+                              <option value="user">Standard User</option>
+                              <option value="author">author</option>
+                            </select>
+                           <has-error :form="form" field="type"></has-error>
+                          </div>
                       </div>
+
                       <div class="modal-footer">
                         <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
                         <button type="button" class="btn btn-primary">Create</button>
@@ -71,6 +100,19 @@
 
 <script>
     export default {
+
+        data() {
+          return {
+            form: new Form({
+              name: '',
+              email: '',
+              password: '',
+              type: '',
+              bio: '',
+              photo: ''
+            })
+          }
+        },
         mounted() {
             console.log('Component mounted.')
         }
