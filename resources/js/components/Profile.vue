@@ -78,13 +78,13 @@
                       <div class="form-group row">
                         <label for="inputName" class="col-sm-2 col-form-label">Name</label>
                         <div class="col-sm-10">
-                          <input type="email" class="form-control" id="inputName" placeholder="Name">
+                          <input type="email" v-model="form.name" class="form-control" id="inputName" placeholder="Name">
                         </div>
                       </div>
                       <div class="form-group row">
                         <label for="inputEmail" class="col-sm-2 col-form-label">Email</label>
                         <div class="col-sm-10">
-                          <input type="email" class="form-control" id="inputEmail" placeholder="Email">
+                          <input type="email" v-model="form.email" class="form-control" id="inputEmail" placeholder="Email">
                         </div>
                       </div>
                       <div class="form-group row">
@@ -97,20 +97,20 @@
                       <div class="form-group row">
                         <label for="photo" class="col-sm-2 col-form-label">Profile Photo</label>
                         <div class="col-sm-10">
-                          <input type="file" class="form-input" id="photo" placeholder="photo">
+                          <input type="file" @change="updateProfile" class="form-input" name="photo" placeholder="photo">
                         </div>
                       </div>
 
                       <div class="form-group row">
                         <label for="passport" class="col-sm-2 col-form-label">Passport</label>
                         <div class="col-sm-10">
-                          <input type="text" class="form-control" id="passport" placeholder="Passport">
+                          <input type="text" v-model="form.password" class="form-control" id="passport" placeholder="Passport">
                         </div>
                       </div>
 
                       <div class="form-group row">
                         <div class="offset-sm-2 col-sm-10">
-                          <button type="submit" class="btn btn-success">Update</button>
+                          <button @click.prevent="updateInfo" type="submit" class="btn btn-success">Update</button>
                         </div>
                       </div>
                     </form>
@@ -132,8 +132,67 @@
 
 <script>
     export default {
+        data(){
+            return {
+                    form: new Form({
+                      id: '',
+                      name: '',
+                      email: '',
+                      password: '',
+                      type: '',
+                      bio: '',
+                      photo: ''
+                    })
+            }
+        },
         mounted() {
             console.log('Component mounted.')
+        },
+
+        methods:{
+            updateInfo(){
+                this.$Progress.start();
+                this.form.put('api/profile')
+                .then(()=>{
+                  this.$Progress.finish();
+                })
+
+                .catch(()=>{
+                  this.$Progress.fail();
+                });
+            },
+
+            updateProfile(e){
+                //console.log('uploading');
+                let file = e.target.files[0];
+
+                // let vm = this;
+
+                // console.log(file);
+                let reader = new FileReader();
+                if(file['size'] < 2111775){
+                  reader.onloadend = (file) => {
+                        // console.log('RESULT', reader.result)
+                        this.form.photo = reader.result;
+                    }
+
+                   
+                    reader.readAsDataURL(file);
+
+                  }else{
+                    Swal.fire({
+                      type: 'error',
+                      title: 'Oops..',
+                      text: 'You are uploading a large file',
+                    })
+                  }
+                        
+            }
+        },
+
+        created() {
+            axios.get("api/profile")
+            .then(({data})=>(this.form.fill(data)));
         }
     }
 </script>

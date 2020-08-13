@@ -61,6 +61,43 @@ class UserController extends Controller
         ]);
     }
 
+    public function updateProfile(Request $request)
+    {
+        $user = auth('api')->user();
+
+        $this->validate($request, [
+            'name' => 'required|string|max:191',
+            'email' => 'required|string|email|max:191|unique:users,email,'.$user->id,
+            'password' => 'sometimes|required|min:8'
+        ]);
+
+        $currentPhoto = $user->photo;
+
+        if($request->photo != $currentPhoto){
+
+
+            // $name = time() . '.' . explode('/', explode(':', substr($request->photo, 0, strpos($request->photo, ';')))[1])[1];
+
+            $extension = explode('/', mime_content_type($request->photo))[1];
+            $name = time().'.'.$extension;
+
+            \Image::make($request->photo)->save(public_path('img/profile/').$name);
+
+            $request->merge(['photo' => $name]);
+        }
+
+        $user->update($request->all());
+
+
+        return ['message' => "Success"];
+    }
+
+
+    public function profile()
+    {
+        return auth('api')->user();
+    }
+
     /**
      * Display the specified resource.
      *
